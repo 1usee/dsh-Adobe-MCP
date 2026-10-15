@@ -1,0 +1,65 @@
+[build-system]
+# 说明书 §13.2 建议 hatchling。本实现改用 setuptools，理由：
+# 开发环境无网络、无法安装 hatchling，而 setuptools 已就位；两者都是 PEP 621
+# 兼容的构建后端，语义相同，且 setuptools 让 `pip install -e .` 可在本机端到端验证。
+# 若要回到 hatchling，只需把下面两行替换为 requires = ["hatchling"] / build-backend = "hatchling.build"，
+# 并删掉 [tool.setuptools] 段（已在 README 的"与说明书的偏差"一节记录）。
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dsh-adobe-mcp"
+version = "1.1.0"
+description = "通过 MCP（Model Context Protocol）驱动 Adobe Premiere Pro 的桥接服务器"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+keywords = ["mcp", "adobe", "premiere-pro", "cep", "extendscript", "automation"]
+classifiers = [
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: Microsoft :: Windows",
+  "Topic :: Multimedia :: Video",
+]
+# ---- 运行时依赖真源（说明书 §13.1）----
+# requirements.txt 与 environment.yml 必须与本段保持同步，由 tests/test_dependencies.py 强制校验。
+dependencies = [
+  "fastmcp>=2.11,<3",
+  "pydantic>=2.7",
+  "websockets>=13",
+  "psutil>=5.9",
+  "esprima>=4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.4",
+  "pytest-asyncio>=0.23",
+]
+
+[project.scripts]
+dsh-adobe-mcp = "dsh_adobe_mcp.__main__:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+minversion = "7.4"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+# 让测试无需安装即可 import 包与 scripts/ 下的门禁脚本
+pythonpath = ["src", "scripts"]
+# -p no:cacheprovider：pytest 的缓存文件用受限 ACL 创建临时文件，在某些沙箱环境下会被拒绝；
+# 缓存对正确性没有影响，因此直接关掉，保持输出干净。
+addopts = "-ra --strict-markers --strict-config -p no:cacheprovider"
+markers = [
+  "integration: 需要真机宿主（默认跳过，见说明书 §14.3）",
+  "chaos: 混沌测试（强杀宿主/断连/超时/磁盘写满）",
+  "slow: 较慢的测试",
+]
+filterwarnings = [
+  "ignore::DeprecationWarning:authlib.*",
+]

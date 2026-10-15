@@ -1,0 +1,20 @@
+# dsh-adobe-mcp —— pip 安装路径
+#
+# 本文件与 pyproject.toml 的 [project.dependencies] 必须是同一组约束（说明书 §13.1）。
+# 三者同步（pyproject.toml / requirements.txt / environment.yml）由
+# tests/test_dependencies.py 强制校验；不同步即测试失败，属于必须修复的问题。
+#
+# 安装：
+#   pip install -r requirements.txt          # 仅运行时依赖
+#   pip install -e ".[dev]"                  # 开发/测试（含下节的两个包）
+
+# ---- 运行时依赖 ----
+fastmcp>=2.11,<3
+pydantic>=2.7
+websockets>=13
+psutil>=5.9
+esprima>=4.0
+
+# ---- 开发/测试依赖（等同 pyproject [project.optional-dependencies].dev）----
+pytest>=7.4
+pytest-asyncio>=0.23

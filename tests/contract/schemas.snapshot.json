@@ -1,0 +1,1997 @@
+{
+  "host_launch": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "project_path": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "wait": {
+        "default": true,
+        "type": "boolean"
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "host_list": {
+    "properties": {},
+    "required": [],
+    "type": "object"
+  },
+  "host_reload_panel": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "host_resync": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "host_status": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "host_wait_ready": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "timeout_s": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "job_cancel": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "job_id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "job_id"
+    ],
+    "type": "object"
+  },
+  "job_list": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "limit": {
+        "default": 50,
+        "type": "integer"
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "job_status": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "job_id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "job_id"
+    ],
+    "type": "object"
+  },
+  "ppro_app_get_state": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "include_selection": {
+        "default": true,
+        "type": "boolean"
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_app_info": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_app_set_playhead": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "seconds": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "seconds"
+    ],
+    "type": "object"
+  },
+  "ppro_effects_apply": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "effect": {
+        "type": "string"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "ref": {
+        "type": "string"
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "effect",
+      "ref"
+    ],
+    "type": "object"
+  },
+  "ppro_effects_apply_transition": {
+    "properties": {
+      "at": {
+        "default": "start",
+        "type": "string"
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "ref": {
+        "type": "string"
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "transition": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "ref",
+      "transition"
+    ],
+    "type": "object"
+  },
+  "ppro_effects_get_params": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "ref": {
+        "type": "string"
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "ref"
+    ],
+    "type": "object"
+  },
+  "ppro_effects_list_available": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "query": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "target": {
+        "default": "clip",
+        "type": "string"
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_effects_set_param": {
+    "properties": {
+      "component": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "param": {
+        "type": "string"
+      },
+      "ref": {
+        "type": "string"
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "value": {
+        "title": "Value"
+      }
+    },
+    "required": [
+      "param",
+      "ref",
+      "value"
+    ],
+    "type": "object"
+  },
+  "ppro_export_encode_file": {
+    "properties": {
+      "confirm_token": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "item": {
+        "type": "string"
+      },
+      "output_path": {
+        "type": "string"
+      },
+      "preset_path": {
+        "type": "string"
+      },
+      "remove_from_queue": {
+        "default": true,
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "item",
+      "output_path",
+      "preset_path"
+    ],
+    "type": "object"
+  },
+  "ppro_export_encode_sequence": {
+    "properties": {
+      "confirm_token": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "output_path": {
+        "type": "string"
+      },
+      "preset_path": {
+        "type": "string"
+      },
+      "remove_from_queue": {
+        "default": true,
+        "type": "boolean"
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "work_area": {
+        "default": "entire",
+        "type": "string"
+      }
+    },
+    "required": [
+      "output_path",
+      "preset_path"
+    ],
+    "type": "object"
+  },
+  "ppro_export_list_presets": {
+    "properties": {
+      "kind": {
+        "default": "sequence",
+        "type": "string"
+      },
+      "query": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_media_generate_proxies": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "ingest": {
+        "default": true,
+        "type": "boolean"
+      },
+      "items": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "preset_path": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "items"
+    ],
+    "type": "object"
+  },
+  "ppro_media_probe": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "item": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "item"
+    ],
+    "type": "object"
+  },
+  "ppro_media_relink": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "item": {
+        "type": "string"
+      },
+      "new_path": {
+        "type": "string"
+      },
+      "override_checks": {
+        "default": false,
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "item",
+      "new_path"
+    ],
+    "type": "object"
+  },
+  "ppro_project_bin_create": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "name": {
+        "type": "string"
+      },
+      "parent": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "name"
+    ],
+    "type": "object"
+  },
+  "ppro_project_bin_list": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "parent": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_project_bin_move": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "items": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "target_bin": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "items",
+      "target_bin"
+    ],
+    "type": "object"
+  },
+  "ppro_project_close": {
+    "properties": {
+      "confirm_discard": {
+        "default": false,
+        "type": "boolean"
+      },
+      "confirm_token": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_project_import": {
+    "properties": {
+      "bin": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "paths": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "suppress_ui": {
+        "default": true,
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "paths"
+    ],
+    "type": "object"
+  },
+  "ppro_project_info": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_project_item_find": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "kind": {
+        "default": "any",
+        "type": "string"
+      },
+      "limit": {
+        "default": 50,
+        "type": "integer"
+      },
+      "query": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "query"
+    ],
+    "type": "object"
+  },
+  "ppro_project_new": {
+    "properties": {
+      "confirm_token": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "path": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "path"
+    ],
+    "type": "object"
+  },
+  "ppro_project_open": {
+    "properties": {
+      "confirm_token": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "path": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "path"
+    ],
+    "type": "object"
+  },
+  "ppro_project_save": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_project_save_as": {
+    "properties": {
+      "confirm_token": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "path": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "path"
+    ],
+    "type": "object"
+  },
+  "ppro_sequence_create": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "frame_rate": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "height": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "name": {
+        "type": "string"
+      },
+      "preset_path": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "width": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "name"
+    ],
+    "type": "object"
+  },
+  "ppro_sequence_create_from_clips": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "items": {
+        "items": {
+          "type": "string"
+        },
+        "type": "array"
+      },
+      "name": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "items",
+      "name"
+    ],
+    "type": "object"
+  },
+  "ppro_sequence_info": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_sequence_list": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_sequence_set_active": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "sequence": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "sequence"
+    ],
+    "type": "object"
+  },
+  "ppro_sequence_set_in_out": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "in_s": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "out_s": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_sequence_set_work_area": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "end_s": {
+        "type": "number"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "start_s": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "end_s",
+      "start_s"
+    ],
+    "type": "object"
+  },
+  "ppro_timeline_add_marker": {
+    "properties": {
+      "at_s": {
+        "type": "number"
+      },
+      "comment": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "duration_s": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "name": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "type": {
+        "default": "comment",
+        "type": "string"
+      }
+    },
+    "required": [
+      "at_s"
+    ],
+    "type": "object"
+  },
+  "ppro_timeline_add_track": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "name": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "position": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "track_type": {
+        "default": "video",
+        "type": "string"
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_timeline_clip_info": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "ref": {
+        "type": "string"
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "ref"
+    ],
+    "type": "object"
+  },
+  "ppro_timeline_insert_clip": {
+    "properties": {
+      "at_s": {
+        "default": 0,
+        "type": "number"
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "item": {
+        "type": "string"
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "track_index": {
+        "default": 1,
+        "type": "integer"
+      },
+      "track_type": {
+        "default": "video",
+        "type": "string"
+      }
+    },
+    "required": [
+      "item"
+    ],
+    "type": "object"
+  },
+  "ppro_timeline_list_clips": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "track_index": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "track_type": {
+        "default": "all",
+        "type": "string"
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_timeline_list_markers": {
+    "properties": {
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [],
+    "type": "object"
+  },
+  "ppro_timeline_move_clip": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "ref": {
+        "type": "string"
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "to_s": {
+        "type": "number"
+      },
+      "to_track_index": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "to_track_type": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "ref",
+      "to_s"
+    ],
+    "type": "object"
+  },
+  "ppro_timeline_overwrite_clip": {
+    "properties": {
+      "at_s": {
+        "default": 0,
+        "type": "number"
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "item": {
+        "type": "string"
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "track_index": {
+        "default": 1,
+        "type": "integer"
+      },
+      "track_type": {
+        "default": "video",
+        "type": "string"
+      }
+    },
+    "required": [
+      "item"
+    ],
+    "type": "object"
+  },
+  "ppro_timeline_razor": {
+    "properties": {
+      "at_s": {
+        "type": "number"
+      },
+      "confirm_token": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "track_index": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "track_type": {
+        "default": "all",
+        "type": "string"
+      }
+    },
+    "required": [
+      "at_s"
+    ],
+    "type": "object"
+  },
+  "ppro_timeline_remove_clip": {
+    "properties": {
+      "confirm_token": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "ref": {
+        "type": "string"
+      },
+      "ripple": {
+        "default": false,
+        "type": "boolean"
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "ref"
+    ],
+    "type": "object"
+  },
+  "ppro_timeline_remove_track": {
+    "properties": {
+      "confirm_token": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "track_index": {
+        "type": "integer"
+      },
+      "track_type": {
+        "default": "video",
+        "type": "string"
+      }
+    },
+    "required": [
+      "track_index"
+    ],
+    "type": "object"
+  },
+  "ppro_timeline_trim_clip": {
+    "properties": {
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "end_s": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "ref": {
+        "type": "string"
+      },
+      "sequence": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "start_s": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "ref"
+    ],
+    "type": "object"
+  },
+  "safety_confirm_operation": {
+    "properties": {
+      "confirm_token": {
+        "type": "string"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "confirm_token"
+    ],
+    "type": "object"
+  },
+  "safety_list_checkpoints": {
+    "properties": {},
+    "required": [],
+    "type": "object"
+  },
+  "safety_restore_checkpoint": {
+    "properties": {
+      "checkpoint_id": {
+        "type": "string"
+      },
+      "confirm_token": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      },
+      "dry_run": {
+        "default": false,
+        "type": "boolean"
+      },
+      "host": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null
+      }
+    },
+    "required": [
+      "checkpoint_id"
+    ],
+    "type": "object"
+  }
+}

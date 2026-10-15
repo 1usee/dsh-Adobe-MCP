@@ -3,8 +3,18 @@
 
 # 临时与探测文件
 .probe-*
-.tmp-verify/
 .tmp/
+.tmp-verify/
+.tmp2/
+
+# pytest 的临时工作目录放在仓库内：开发环境的系统临时目录长路径形式
+# 不被沙箱放行（详见 README「开发环境注意事项」）
+.pytest-work*/
+.pytest-tmp*/
+pytest-cache-files-*/
+
+# 测试素材（用 tests/fixtures/make_fixtures.ps1 在本机生成）
+tests/fixtures/media/
 
 # Python
 __pycache__/

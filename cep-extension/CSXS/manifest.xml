@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  cep-extension/CSXS/manifest.xml
+
+  DSH Adobe Bridge —— CEP 扩展清单（L3 宿主内代理层）。
+
+  设计说明书 §4.3 要求本文件必须包含以下元素，缺一不可：
+    ExtensionManifest/@ExtensionBundleId  唯一包标识
+    ExtensionBundleVersion                语义化版本号
+    HostList                              至少 PPRO，版本范围覆盖目标版本
+    RequiredRuntime                       CSXS 版本与目标宿主匹配
+    MainPath                              面板入口 HTML
+    CEFCommandLine                        必须含 enable-nodejs 与 mixed-context 两个开关
+    UI/Type = Panel                       可停靠面板
+    Geometry                              面板初始尺寸
+
+  注意：本 XML 注释里**不能**写出带两个连字符的命令行开关（XML 规范禁止注释体
+  内出现双连字符），因此上面只写开关名；真正的开关写在下面的 Parameter 元素里。
+  其中 mixed-context 是 CEP 9+ 里让面板 window 作用域能直接使用 require 的
+  前提；缺失它是"require is not defined"最常见的根因（说明书 §4.3 注意事项）。
+  本项目的 js/main.js 用 require 引入 Node 内置模块，因此这两个开关均为硬性依赖。
+
+  另外：本文件只声明扩展的加载与运行时配置，不涉及任何宿主授权/许可状态
+  （说明书 §1.3）。
+-->
+<ExtensionManifest Version="7.0"
+                   ExtensionBundleId="com.dsh.adobe.bridge"
+                   ExtensionBundleVersion="1.1.0"
+                   ExtensionBundleName="DSH Adobe Bridge"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <ExtensionList>
+    <Extension Id="com.dsh.adobe.bridge.panel" Version="1.1.0"/>
+  </ExtensionList>
+
+  <ExecutionEnvironment>
+    <HostList>
+      <!--
+        第一阶段只覆盖 Premiere Pro（说明书 §1.1 范围）。
+        Version 范围写成 [13.0,99.9]，覆盖 CC 2019(13.x) 起的所有版本，
+        避免宿主升级后扩展被判定为"不兼容"而静默不加载。
+        AME 宿主（AME）按说明书 §7.2 在 M5 阶段加入。
+      -->
+      <Host Name="PPRO" Version="[13.0,99.9]"/>
+    </HostList>
+
+    <LocaleList>
+      <Locale Code="All"/>
+    </LocaleList>
+
+    <!--
+      RequiredRuntime：面板 Node 侧用 require 加载内置模块，并依赖 CEF 的
+      __adobe_cep__ 桥接对象，因此需要 CSXS 9.0 及以上（CEP 9 起才稳定提供
+      mixed-context 下的 Node 运行时）。9.0 对 PPRO 2019 及以后均成立。
+    -->
+    <RequiredRuntimeList>
+      <RequiredRuntime Name="CSXS" Version="9.0"/>
+    </RequiredRuntimeList>
+  </ExecutionEnvironment>
+
+  <DispatchInfoList>
+    <Extension Id="com.dsh.adobe.bridge.panel">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <ScriptPath>./jsx/dispatch.jsx</ScriptPath>
+          <CEFCommandLine>
+            <!-- Node 运行时：面板 Node 侧（ws-server / dispatch / mini-ws）必需。 -->
+            <Parameter>--enable-nodejs</Parameter>
+            <!--
+              混合上下文：让面板 window 作用域可直接 require。
+              缺失即为最常见的 "require is not defined" 根因（说明书 §4.3）。
+            -->
+            <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+
+        <UI>
+          <!-- Panel = 可停靠面板（说明书 §4.3） -->
+          <Type>Panel</Type>
+          <Menu>DSH Adobe Bridge</Menu>
+          <Geometry>
+            <Size>
+              <Width>470</Width>
+              <Height>360</Height>
+            </Size>
+            <MinSize>
+              <Width>340</Width>
+              <Height>220</Height>
+            </MinSize>
+            <MaxSize>
+              <Width>1600</Width>
+              <Height>1200</Height>
+            </MaxSize>
+          </Geometry>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+  </DispatchInfoList>
+</ExtensionManifest>

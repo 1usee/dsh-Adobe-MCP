@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<!--
+  cep-extension/index.html
+
+  DSH Adobe Bridge 面板入口（manifest.xml 的 MainPath 指向本文件）。
+
+  脚本加载顺序（很重要）：
+    1. lib/CSInterface.js  —— 官方库，**可选**。仓库里没有它的官方副本（离线
+       环境无法获取），因此这一步通常 404，属预期；部署时把官方 CSInterface.js
+       放到 lib/ 即可自动生效（见 lib/csinterface-shim.js 头部说明）。
+    2. lib/csinterface-shim.js —— 降级实现。仅在官方库缺失时兜底，
+       **只用于"面板被当作普通网页打开"时的可见性调试**。
+       真实 CEP 环境里 window.__adobe_cep__ 一定存在，js/main.js 会优先用
+       原生桥构造 CSInterface，shim 的假实现不会被使用。
+    3. js/main.js —— 面板引导（真正干活的部分）。
+
+  js/main.js 通过 require(...) 加载同目录模块，因此依赖 manifest.xml 里
+  CEFCommandLine 的 --enable-nodejs 与 --mixed-context 两项（说明书 §4.3）。
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <title>DSH Adobe Bridge</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+      font-size: 12px;
+      background: #262626;
+      color: #d6d6d6;
+      padding: 10px 12px 16px;
+    }
+    h1 { font-size: 13px; margin: 0 0 2px; font-weight: 600; color: #f0f0f0; }
+    .sub { color: #8a8a8a; font-size: 11px; margin-bottom: 10px; }
+    .banner {
+      display: none;
+      background: #46351a;
+      border: 1px solid #7a5c25;
+      color: #ffd79a;
+      padding: 6px 8px;
+      border-radius: 3px;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    .banner.error { background: #4a1f1f; border-color: #8a3232; color: #ffb3b3; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 8px; }
+    th, td { text-align: left; padding: 2px 6px 2px 0; vertical-align: top; }
+    th { color: #9a9a9a; font-weight: 400; width: 38%; white-space: nowrap; }
+    td { color: #e6e6e6; word-break: break-all; }
+    .row-actions { display: flex; gap: 6px; flex-wrap: wrap; margin: 6px 0 10px; }
+    button {
+      font: inherit;
+      background: #3a3a3a;
+      color: #e0e0e0;
+      border: 1px solid #4d4d4d;
+      border-radius: 3px;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+    button:hover { background: #454545; }
+    button:active { background: #333; }
+    .section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: #8a8a8a;
+      margin: 10px 0 4px;
+      border-bottom: 1px solid #3a3a3a;
+      padding-bottom: 3px;
+    }
+    pre {
+      margin: 0;
+      background: #1c1c1c;
+      border: 1px solid #333;
+      border-radius: 3px;
+      padding: 6px 8px;
+      max-height: 160px;
+      overflow: auto;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 11px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-all;
+      color: #cfcfcf;
+    }
+    .hint { color: #8a8a8a; font-size: 11px; margin-top: 4px; line-height: 1.5; }
+    code { background: #333; padding: 0 3px; border-radius: 2px; font-family: Consolas, monospace; }
+  </style>
+</head>
+<body>
+  <h1>DSH Adobe Bridge</h1>
+  <div class="sub">宿主内代理层（L3）· 面板是 WebSocket <b>服务端</b>，只绑定 127.0.0.1 动态端口</div>
+
+  <div id="env-banner" class="banner"></div>
+  <div id="boot-error" class="banner error"></div>
+
+  <table>
+    <tr><th>连接状态</th><td id="conn-state">初始化…</td></tr>
+    <tr><th>监听端口</th><td id="conn-port">—</td></tr>
+    <tr><th>宿主</th><td id="conn-host">—</td></tr>
+    <tr><th>面板 / 契约</th><td id="panel-version">—</td></tr>
+    <tr><th>ExtendScript</th><td id="eval-state">—</td></tr>
+    <tr><th>运行时长</th><td id="uptime">—</td></tr>
+    <tr><th>请求统计</th><td id="stats">—</td></tr>
+    <tr><th>最近命令</th><td id="last-cmd">—</td></tr>
+    <tr><th>握手文件</th><td id="handshake-state">—</td></tr>
+    <tr><th>日志文件</th><td id="log-path">—</td></tr>
+  </table>
+
+  <div class="row-actions">
+    <button id="btn-copy-handshake" type="button">复制握手信息</button>
+    <button id="btn-refresh" type="button">刷新状态</button>
+    <button id="btn-open-logdir" type="button">显示日志路径</button>
+  </div>
+  <div id="copy-state" class="hint"></div>
+
+  <div class="section-title">最近日志（面板 Node 侧）</div>
+  <pre id="log-tail">（等待日志…）</pre>
+
+  <div class="hint">
+    排障：L1 侧找不到面板时，确认握手文件写在 <code>%TEMP%\dsh-adobe-mcp\</code>；
+    CEP 扩展部署在 <code>%APPDATA%\Adobe\CEP\extensions\com.dsh.adobe.bridge\</code>；
+    未签名扩展需先开启 PlayerDebugMode（见 README）。
+  </div>
+
+  <!--
+    1) 官方 CSInterface.js（可选，缺失即 404，属预期——见文件头说明）。
+       若部署时放入了官方库，它会定义 window.CSInterface，
+       下面的 shim 检测到之后就不会覆盖它。
+  -->
+  <script src="lib/CSInterface.js"></script>
+
+  <!-- 2) CSInterface 降级实现（仅非 CEP 环境下兜底） -->
+  <script src="lib/csinterface-shim.js"></script>
+  <script>
+    // 官方库存在则保留它；否则用 shim 暴露一个同名构造函数，
+    // 让老写法 new CSInterface() 在浏览器里也不报错。
+    (function () {
+      if (typeof window.CSInterface === "undefined" && window.DshCsInterfaceShim) {
+        window.CSInterface = window.DshCsInterfaceShim.ShimCsInterface;
+        window.DSH_CSINTERFACE_SOURCE = "shim(browser)";
+      } else if (window.CSInterface) {
+        window.DSH_CSINTERFACE_SOURCE = "lib/CSInterface.js(official)";
+      }
+    })();
+  </script>
+
+  <!-- 3) 面板引导：Node 侧全部逻辑都在这里（需要 --enable-nodejs / --mixed-context） -->
+  <script src="js/main.js"></script>
+</body>
+</html>

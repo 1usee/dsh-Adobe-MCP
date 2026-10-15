@@ -1,0 +1,27 @@
+# dsh-adobe-mcp —— conda 安装路径
+#
+# 与 pyproject.toml 的 [project.dependencies] / [project.optional-dependencies].dev
+# 保持同步（说明书 §13.1），由 tests/test_dependencies.py 强制校验。
+#
+#   conda env create -f environment.yml
+#   conda activate dsh-adobe-mcp
+#   pip install -e .            # 安装本包本身（可选；测试也可直接用 pythonpath 运行）
+name: dsh-adobe-mcp
+channels:
+  - conda-forge
+dependencies:
+  # 说明书 §13.1：>=3.11，推荐 3.12（Windows 上预编译轮子最齐全）
+  - python>=3.11
+  - pip
+  - pip:
+      # ---- 运行时依赖 ----
+      - fastmcp>=2.11,<3
+      - pydantic>=2.7
+      - websockets>=13
+      - psutil>=5.9
+      # esprima 在 PyPI 上只有源码包（sdist），安装时需要本地构建；
+      # 它本身是纯 Python，不需要编译器，但需要 setuptools 在位。
+      - esprima>=4.0
+      # ---- 开发/测试依赖 ----
+      - pytest>=7.4
+      - pytest-asyncio>=0.23
