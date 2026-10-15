@@ -3,7 +3,7 @@
 | 项 | 内容 |
 |---|---|
 | 文档编号 | DSH-ADOBE-MCP-SPEC-001 |
-| 版本 | v1.0（设计定稿） |
+| 版本 | v1.1（依赖与设计选择定案） |
 | 日期 | 2026-10-15 |
 | 状态 | 待评审 |
 | 目标读者 | 实现者、评审者、运维者 |
@@ -204,12 +204,16 @@
 3. 面板把连接信息写入握手文件：
    `%TEMP%\dsh-adobe-mcp\handshake-<宿主>-<进程号>.json`
    字段：端口、令牌、宿主进程号、宿主版本、面板版本、启动时间戳。
-4. Python 侧监视该目录（文件系统事件 + 轮询兜底），读取握手文件后连接。
+4. Python 侧**以固定间隔轮询该目录**（默认 0.5 秒），读取握手文件后连接。
 5. WebSocket 连接建立后的第一帧必须是认证帧，携带该令牌；校验失败立即断开。
+
+**监视方式选型：** 采用**纯异步轮询**，不引入文件系统事件库。理由是握手目录只含少量小文件，且握手每宿主生命周期只发生一次，0.5 秒轮询的开销可忽略；而事件驱动方案需要引入额外依赖，并把线程模型与 asyncio 事件循环缝合，复杂度与收益不成正比。若将来确需事件驱动，应选用原生支持 asyncio 的 `watchfiles`，而非基于线程的 `watchdog`。
 
 **这样设计的安全收益：** 结合"仅绑定回环地址"与"每次启动的随机令牌"，同机其他进程无法冒充或劫持桥接连接。日志中**不得**记录令牌明文。
 
 **过期清理：** 宿主异常退出会留下陈旧握手文件。Python 侧在读取时校验对应进程号是否存活，并清理陈旧文件。
+
+**进程存活校验必须使用 `psutil`，禁止使用 `os.kill(pid, 0)`。** 后者在 Windows 上不是一个探测手段：Python 文档明确规定 Windows 只支持 `CTRL_C_EVENT` 与 `CTRL_BREAK_EVENT` 两个信号，传入其他信号值会经 `TerminateProcess` **无条件终止目标进程**。用 `os.kill(pid, 0)` 检测 Premiere Pro 是否存活，会直接把用户的宿主进程杀掉。
 
 ### 5.2 信封格式
 
@@ -261,7 +265,17 @@ ExtendScript 基于 ECMAScript 3，这是实现阶段最大的陷阱来源。编
 | `Promise` / `async` | 全部同步；异步由 L1 的任务模型承担 |
 | `try/catch` 的 `error.stack` | 使用 `error.message`、`error.line`、`$.fileName` |
 
-**校验手段：** 构建流程中必须有一个静态检查步骤，扫描 `jsx/**` 中的 ES5+ 语法（可用轻量 AST 检查或正则黑名单），发现即失败。
+**校验手段：** 构建流程中必须有一个静态检查步骤，扫描 `jsx/**` 中的 ES5+ 语法，发现即失败。
+
+**实现选型：用 `esprima` 解析 AST，而非正则黑名单。** 正则无法区分字符串/注释里的 `let`、`=>`，会产生大量误报，最终被开发者关掉——那样的门禁等于没有。AST 检查能准确识别 `VariableDeclaration` 的 `let`/`const`、`ArrowFunctionExpression`、`TemplateLiteral`、解构模式等节点。
+
+**关键实现细节：不能依赖"解析报错"来判定违禁语法。** `esprima` 4.x 实现的是 ES2017，`let` / `const` / 箭头函数 / 模板字符串**都能正常解析通过**，不会抛异常。因此门禁必须两步走：先解析成 AST，再由检查器**遍历 AST 节点类型**判定违禁语法。若误以为"解析失败即含 ES5+ 语法"，门禁会静默失效——这比没有门禁更危险，因为它给出虚假的安全感。
+
+**已知限制与退路：**
+- `esprima`（Python 移植版）自 2021 年起基本停止更新。选定它的理由是它让这道门禁能跑在 pytest 内，与 §14.5 的"测试即不变量"思路一致（Math-MCP 用 `tests/test_dependencies.py` 强制依赖三方同步，是同一模式）。
+- ExtendScript 的 `#include` / `#target` 等预处理指令不是合法 JavaScript，解析前必须先剥离以 `#` 开头的行。
+- 若 esprima 无法解析目标 JSX，退路是用 Node + `acorn` 解析。代价是这道检查脱离 pytest，需要在 CI 中单独配置。
+- 无论走哪条路，检查器本身必须有测试：对每个禁止的语法各准备一个应失败的样本，对合法 ES3 准备应通过的样本。
 
 ### 6.2 API 分层策略
 
@@ -436,6 +450,10 @@ WAL 采用追加写入的 JSONL 格式，按天分文件。WAL 是排查"AI 到�
 配置来源优先级：命令行参数 > 环境变量 > 配置文件 > 内置默认值。
 配置文件位置：`%APPDATA%\dsh-adobe-mcp\config.toml`，项目根目录的 `config.toml` 作为开发期覆盖。
 
+**格式选型：TOML，不使用 YAML。** 理由有三：Python 3.11+ 的标准库 `tomllib` 可直接读取，**零依赖**；项目的 `pyproject.toml` 本就是 TOML，全项目统一一种格式；TOML 的类型是显式的，不会出现 YAML 那种 `on`/`yes` 被解析成布尔值的歧义。
+
+**此处有意偏离 Math-MCP 的惯例**（它用 `PyYAML` + YAML 配置）。这是刻意的取舍：为一致性引入一个依赖，不如为少一个依赖接受格式差异。若后续需要与 Math-MCP 完全对齐，改用 YAML 只需替换 `config.py` 的读取层。
+
 | 配置节 | 键 | 默认值 | 说明 |
 |---|---|---|---|
 | `server` | `log_level` | `info` | 日志级别 |
@@ -495,11 +513,52 @@ WAL 采用追加写入的 JSONL 格式，按天分文件。WAL 是排查"AI 到�
 
 ---
 
-## 13. 工程结构
+## 13. 依赖与工程结构
+
+### 13.1 依赖清单
+
+**Python 版本：`>=3.11`，推荐 3.12。** 选 3.12 的理由是与 Math-MCP 一致，且 Windows 上各类预编译轮子最齐全；3.13 可用但需确认 `psutil` 等含 C 扩展的包有对应轮子。
+
+**运行时依赖（5 个）：**
+
+| 包 | 版本约束 | 用途 | 关联章节 |
+|---|---|---|---|
+| `fastmcp` | `>=2.11,<3` | MCP 框架。**有意锁定 2.x** —— 3.x / 4.x 存在破坏性变更（4.x 内部已拆分为 `fastmcp-slim`），升级前须先阅读官方迁移文档 | §7 |
+| `pydantic` | `>=2.7` | 工具输入 schema 与桥接信封的校验 | §7.1、§5.2 |
+| `websockets` | `>=13` | 与宿主内面板通信的 WebSocket 客户端（asyncio 原生） | §5.1 |
+| `psutil` | `>=5.9` | 进程存活检测与宿主运行状态判定。**Windows 上不可用 `os.kill(pid, 0)` 替代**，见 §5.1 | §4.1、§5.1 |
+| `esprima` | `>=4.0` | ES3 方言静态检查的 AST 解析器 | §6.1、§14.5 |
+
+**`esprima` 只有源码包（sdist），没有 wheel。** 最新版 `4.0.1` 在 PyPI 上仅提供 `.tar.gz`，安装时需要本地构建。它本身是纯 Python，因此不需要编译器，但需要 `setuptools` 在位（conda 环境已自带）。这一点会影响离线或受限网络环境下的环境搭建，需提前知晓。
+
+**开发/测试依赖（2 个）：**
+
+| 包 | 版本约束 | 用途 |
+|---|---|---|
+| `pytest` | `>=7.4` | 测试运行器 |
+| `pytest-asyncio` | `>=0.23` | 测试 async 工具函数与桥接逻辑（配 `asyncio_mode = "auto"`） |
+
+**明确不声明的依赖及其理由：**
+
+| 包 | 不声明的理由 |
+|---|---|
+| `mcp` | 由 `fastmcp` 自动引入。本项目不直接 import，故不声明 |
+| `httpx` / `starlette` / `uvicorn` / `sse-starlette` | 同上，均为 `fastmcp` 的传递依赖 |
+| `tomli` | Python ≥3.11 的标准库已含 `tomllib`，是冗余依赖 |
+| `PyYAML` | 配置格式为 TOML，见 §10 |
+| `pywin32` | 读注册表用标准库 `winreg` 即可。本项目经 CEP 桥接通信，**不使用 COM 自动化**，这是不需要 `pywin32` 的根本原因 |
+| `watchdog` / `watchfiles` | 握手目录采用纯轮询，见 §5.1 |
+| `numpy` / `pandas` / `scipy` 等 | 本项目无数据分析需求 |
+
+**依赖真源的三方同步（沿用 Math-MCP 惯例）：** `pyproject.toml` 的 `[project.dependencies]` 为唯一真源，`requirements.txt` 与 `environment.yml` 面向 pip / conda 两条安装路径。三者必须保持同步，并由 `tests/test_dependencies.py` 强制校验——该测试的失败即意味着版本漂移，属于必须修复的问题而非警告。
+
+### 13.2 目录结构
 
 ```
 dsh-adobe-mcp/
-├─ pyproject.toml                  # Python ≥3.11；依赖：mcp SDK、websockets、pydantic、tomli
+├─ pyproject.toml                  # 依赖真源；Python >=3.11；hatchling 构建后端
+├─ requirements.txt                # pip 路径，内容须与 pyproject 同步
+├─ environment.yml                 # conda 路径（conda-forge + pip 段），须与 pyproject 同步
 ├─ README.md
 ├─ config.example.toml
 ├─ docs/
@@ -611,7 +670,11 @@ dsh-adobe-mcp/
 
 ### 14.5 构建期检查
 
-ES3 方言静态检查作为 CI 的强制门禁；`commands.json` 变更时文档自动重新生成并校验是否已提交。
+三道强制门禁，任一失败即阻断合入：
+
+1. **依赖真源一致性** —— `tests/test_dependencies.py` 校验 `pyproject.toml`、`requirements.txt`、`environment.yml` 三者声明的依赖与版本约束完全一致（沿用 Math-MCP 惯例）。
+2. **ES3 方言静态检查** —— 用 `esprima` 解析 `jsx/**` 的 AST，命中任一禁止语法即失败（见 §6.1）。解析前剥离 `#include` / `#target` 等预处理行。该检查器自身必须有正反样本测试。
+3. **命令契约与文档同步** —— `commands.json` 变更时，工具文档自动重新生成并校验是否已提交。
 
 ---
 
@@ -646,6 +709,8 @@ ES3 方言静态检查作为 CI 的强制门禁；`commands.json` 变更时文�
 | R-10 | 56 个工具挤占客户端上下文 | 中 | 中 | 工具组分段启用，默认只开核心 + 两条生产链路 |
 | R-11 | AI 误删素材或覆盖工程 | 中 | 高 | T2 确认门 + 检查点 + 路径白名单 + WAL 审计 |
 | R-12 | 参数注入导致任意脚本执行 | 低 | 极高 | 命令名白名单 + schema 严格校验；禁止透传任意脚本 |
+| R-13 | `esprima` 停止维护，无法解析目标 JSX | 中 | 低 | 退路为 Node + `acorn`；检查器带正反样本测试，解析失败会显式暴露而非静默通过 |
+| R-14 | `fastmcp` 2.x 停止维护或生态迁移 | 低 | 中 | 锁 `<3` 并在升级前阅读官方迁移文档；MCP 工具层与框架解耦，替换成本可控 |
 
 ---
 
@@ -687,3 +752,4 @@ ES3 方言静态检查作为 CI 的强制门禁；`commands.json` 变更时文�
 | 版本 | 日期 | 变更 |
 |---|---|---|
 | v1.0 | 2026-10-15 | 初版设计定稿。范围：Premiere Pro、Windows、CEP + ExtendScript、单进程 stdio 多宿主路由。 |
+| v1.1 | 2026-10-15 | 依赖章节定案。修正 §13 依赖真源（`mcp` → `fastmcp>=2.11,<3`，删除冗余的 `tomli`）；补齐遗漏的必需依赖 `psutil` 与 `esprima`；新增 §13.1 依赖清单与"不声明的依赖及理由"；新增 §14.5 依赖三方同步门禁（沿用 Math-MCP 惯例）；定案三处设计选择：配置格式 TOML（§10）、握手目录纯轮询（§5.1）、ES3 检查用 `esprima` AST（§6.1）；补充 Windows 上 `os.kill(pid, 0)` 会终止目标进程的警示（§5.1）；补充"不得依赖解析报错判定违禁语法"这一门禁实现细节与 `esprima` 仅有 sdist 的安装前提（§6.1、§13.1）；风险登记册新增 R-13、R-14。 |

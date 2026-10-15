@@ -3,6 +3,8 @@
 
 # 临时与探测文件
 .probe-*
+.tmp-verify/
+.tmp/
 
 # Python
 __pycache__/
