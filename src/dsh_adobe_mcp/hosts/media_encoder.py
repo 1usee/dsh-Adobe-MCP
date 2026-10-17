@@ -30,5 +30,15 @@ class MediaEncoderAdapter(HostAdapter):
     )
     registry_locations = AME_REGISTRY_LOCATIONS
 
+    uninstall_match = "Media Encoder"
+    product_dir_names = (
+        "Adobe Media Encoder 2025",
+        "Adobe Media Encoder 2024",
+        "Adobe Media Encoder 2023",
+        "Adobe Media Encoder 2022",
+        "Adobe Media Encoder 2021",
+        "Adobe Media Encoder 2020",
+    )
+
     def describe(self) -> str:
         return "Adobe Media Encoder（CEP 标识 AME）"

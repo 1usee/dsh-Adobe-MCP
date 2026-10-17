@@ -442,7 +442,26 @@ def _format_value(value: Any) -> str:
     if isinstance(value, list):
         inner = ", ".join(_format_value(item) for item in value)
         return f"[{inner}]"
-    return json.dumps(str(value), ensure_ascii=False)
+    return json.dumps(_portable_path(value), ensure_ascii=False)
+
+
+def _portable_path(text: str) -> str:
+    """把绝对路径里"随机器/会话变化"的部分还原成环境变量写法。
+
+    为什么必须做：默认握手目录是 ``%TEMP%\\dsh-adobe-mcp``，而 ``%TEMP%`` 的解析结果
+    每次运行都可能不同（本机实测在不同会话里是 ``...\\Temp\\dsh-qh6Wnu`` 与
+    ``...\\Temp\\dsh-VJYLdK``）。如果把展开后的路径写进示例文件，示例就变成了
+    "绑死在某一次会话"的内容，门禁会莫名其妙地反复失败——而它本该是稳定产物。
+    """
+    out = str(text)
+    home = str(Path.home())
+    if home and home in out:
+        out = out.replace(home, "%USERPROFILE%")
+    for variable in ("TEMP", "TMP", "LOCALAPPDATA", "APPDATA", "USERPROFILE", "ProgramFiles", "ProgramW6432"):
+        raw = os.environ.get(variable)
+        if raw and raw in out:
+            out = out.replace(raw, f"%{variable}%")
+    return out
 
 
 _SECTION_COMMENTS: dict[tuple[str, ...], str] = {

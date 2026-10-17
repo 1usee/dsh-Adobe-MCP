@@ -197,16 +197,22 @@ class HostAdapter:
         reader = reader or default_reader()
         found: list[HostDescriptor] = []
         seen: set[tuple[str, str]] = set()
-        for candidate in read_host_installs(self.registry_locations, reader):
-            key = (candidate.version, str(candidate.install_path).lower())
+        for candidate in read_host_installs(
+            self.registry_locations,
+            reader,
+            executable_name=self.executable_name,
+            product_dir_names=self.product_dir_names,
+            uninstall_match=self.uninstall_match,
+        ):
+            executable = Path(candidate.install_path) / self.executable_name
+            key = (candidate.version, str(executable).lower())
             if key in seen:
                 continue
             seen.add(key)
-            executable = Path(candidate.install_path) / self.executable_name
-            notes: list[str] = []
+            notes: list[str] = [f"发现来源：{candidate.source}"]
             if not executable.is_file():
                 notes.append(
-                    f"注册表给出的安装路径下没有找到 {self.executable_name}；"
+                    f"该路径下没有找到 {self.executable_name}；"
                     "宿主可能被移动或卸载残留，启动前请人工确认"
                 )
             found.append(
